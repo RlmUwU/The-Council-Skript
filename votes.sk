@@ -1,0 +1,49 @@
+command /vote <player>:
+    trigger:
+        if {nomination.open} is true:
+            if size of {NominatedPlayers::*} is lower than 3:
+                if {NominatedPlayers::*} does not contain arg-1:
+                    if {PreviousNominatedPlayers::*} does not contain arg-1:
+                        set {%player%.nomination} to arg-1
+                        add arg-1 to {NominatedPlayers::*}
+                        broadcast "%player% a nominé %arg-1%" 
+                    else:
+                        send "Ce joueur a été nominé au tour précédent" to sender
+                else:
+                    send "Ce joueur a déja été nominé" to sender
+            else:
+                send "3 Joueur ont déja été nominé" to sender
+        else:
+            send "Aucun vote n'est ouvert pour l'instant" to sender
+
+command /judge <player> <boolean>:
+    trigger:
+        set {judgement.%sender%.%arg-1%} to arg-2
+        add 1 to {judgement.%arg-1%.count}
+
+function openVoteDiscussion():
+    broadcast "Vous pouvez dès a présent nominer quelqu'un que vous trouvez suspect"
+    set {nomination.open} to true
+    set {PreviousNominatedPlayers::*} to {NominatedPlayers::*}
+    delete {NominatedPlayers::*}
+
+function closeVoteDiscussion():
+    set {nomination.open} to false
+    loop {ActivePlayers::*}:
+        delete {%loop-value%.nomination}
+    
+function closeJudgement():
+    set {highest_count} to 0
+    loop {NominatedPlayers::*}:
+        if {judgement.%loop-value%.count} is greater than or equal to size of {NominatedPlayers::*}/2:
+            if {judgement.%loop-value%.count} is greater than {highest_count}:
+                set {_excluded_player} to loop-value
+            else if {judgement.%loop-value%.count} is equal to {highest_count}:
+                delete {_excluded_player}
+
+function excludePlayer(p:player):
+    delete {ActivePlayers::%{_p}%}
+    set {ActivePlayers::*} to sorted {ActivePlayers::*}
+    broadcast "Due au vote de la majorité, %{_p}% a été exclus du conseil"
+
+

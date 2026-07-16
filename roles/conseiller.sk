@@ -1,0 +1,4 @@
+on load:
+    add "conseiller" to {roles::*}
+    set {conseiller.camp} to "council"
+    add "conseiller" to {council.roles::*}

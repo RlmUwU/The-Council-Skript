@@ -1,0 +1,10 @@
+on load:
+    # reset les variables
+    set {phase} to 0
+
+command /start:
+    permission: op
+    trigger:
+        set {ActivePlayers::*} to Players
+        startPhaseAction()
+        

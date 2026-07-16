@@ -1,0 +1,4 @@
+on load:
+    add "traque-sang" to {roles::*}
+    set {traque-sang.camp} to "neutre"
+    add "traque-sang" to {neutre.roles::*}

@@ -1,0 +1,32 @@
+on load:
+    delete {roles::*}
+    reload skript file "roles\" # nécéssaire pour bien charger la listes des roles
+
+
+function distributeRoles():
+    set {temp.roles::*} to {roles::*}
+    set {temp.roles::*} to shuffled {temp.roles::*}
+    loop size of {ActivePlayers::*} times:
+        assigneRole({ActivePlayers::%loop-value%}, {temp.roles::%loop-value%})
+
+function assigneRole(p:player, role:Text):
+    set {%{_p}%.role} to {_role}
+    set {%{_role}%.player} to {_p}
+    set {%{_p}%.camp} to {%{_role}%.camp}
+
+
+command /listPlayersRoles:
+    permission: op
+    trigger:
+        loop {roles::*}:
+            send "%loop-value-1% - %{%loop-value-1%.player}%"
+
+command /setRolePlayer <player> <role:text>:
+    permission: op
+    trigger:
+        if {roles::*} does not contain arg-2:
+            send "Role inexistant" to sender
+            send {roles::*} to sender
+            exit
+        assigneRole(arg-1,arg-2)
+        

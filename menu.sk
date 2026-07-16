@@ -1,0 +1,84 @@
+on load:
+    set {_shape::*} to (2, 0), (3, 0), (4, 0), (1, 1), (5, 1), (0, 2), (6, 2), (0, 3), (6, 3), (1, 4), (5, 4), (2, 5), (3, 5), (4, 5)
+
+command /testgui:
+    permission: op
+    trigger:
+        loop {ActivePlayers::*}:
+
+
+        create a gui with virtual chest inventory named "Conseil" with 6 rows
+        open the last gui for the sender 
+
+function calculatePlayersPostions():
+    
+
+command /testcircle <integer>:
+    permission: op
+    trigger:
+        openCircleGui(sender, arg-1)
+
+function openCircleGui(p: player, amount: integer):
+    create a gui with virtual chest inventory with 6 rows named "&8Cercle pixel art":
+
+        # =========================
+        # CERCLE PIXEL ART
+        # Forme dans un coffre 9x6 :
+        #
+        # ...###...
+        # ..#...#..
+        # .#.....#.
+        # .#.....#.
+        # ..#...#..
+        # ...###...
+        #
+        # Slots du contour, dans l'ordre horaire
+        # =========================
+
+        delete {_circle::*}
+
+        add 3 to {_circle::*}
+        add 4 to {_circle::*}
+        add 5 to {_circle::*}
+        add 15 to {_circle::*}
+        add 25 to {_circle::*}
+        add 34 to {_circle::*}
+        add 42 to {_circle::*}
+        add 50 to {_circle::*}
+        add 49 to {_circle::*}
+        add 48 to {_circle::*}
+        add 38 to {_circle::*}
+        add 28 to {_circle::*}
+        add 19 to {_circle::*}
+        add 11 to {_circle::*}
+
+        set {_circleSize} to size of {_circle::*}
+
+        # Fond du GUI
+        loop numbers from 0 to 53:
+            make gui slot loop-number with gray stained glass pane named " "
+
+        # Affichage du contour du cercle
+        loop {_circle::*}:
+            make gui slot loop-value with black stained glass pane named " "
+
+        # =========================
+        # PLACEMENT DES POINTS
+        # =========================
+
+        set {_step} to {_circleSize} / {_amount}
+
+        loop {_amount} times:
+            set {_i} to loop-number - 1
+
+            # Position théorique dans le contour
+            set {_rawIndex} to floor({_i} * {_step})
+
+            # Les listes Skript commencent à 1
+            set {_index} to {_rawIndex} + 1
+
+            set {_slot} to {_circle::%{_index}%}
+
+            make gui slot {_slot} with lime stained glass pane named "&aPoint %{_i} + 1%"
+
+    open last gui to {_p}

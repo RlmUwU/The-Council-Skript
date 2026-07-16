@@ -1,0 +1,77 @@
+on load:
+    set {action.room.locations} to location(0, 150, 0)
+    set {action.room.xdisplacement} to 50
+    set {action.duration} to 30
+
+    set {discussion.duration} to 60
+
+    set {defense.duration} to 60
+    set {defense.center.location} to location(0, 100, 0)
+
+    set {judgment.duration} to 15
+
+function startPhaseAction():
+    loop {ActivePlayers::*}:
+        set {_p} to loop-value
+        if {%{_p}%.camp} is not "infiltre":
+            set {_location} to {action.room.locations}
+            set x of {_location} to x of {_location} + {action.room.xdisplacement}*loop-iteration
+            teleport {_p} to {_location}
+    loop {action.duration} time:
+        wait 1 second
+        loop {ActivePlayers::*}:
+            send actionbar "Il reste %{action.duration} - loop-iteration-1% secondes" to loop-value-2
+    
+    startPhaseDiscussion()
+
+
+function startPhaseDiscussion():
+    loop {discussion.duration} time:
+        wait 1 second
+        loop {ActivePlayers::*}:
+            send actionbar "Il reste %{discussion.duration} - loop-iteration-1% secondes" to loop-value-2
+        if loop-iteration is {discussion.duration}/2:
+            openVoteDiscussion()
+    closeVoteDiscussion()
+
+    broadcast "les joueurs nominé sont:"
+    broadcast {NominatedPlayers::*}
+    if size of {NominatedPlayers::*} is greater than 0:
+        startPhaseDefense()
+    
+
+function startPhaseDefense():
+    loop {NominatedPlayers::*}:
+        set {_previous_loc} to loop-value's location
+        teleport loop-value to {defense.center.location}
+        loop {defense.duration} time:
+            wait 1 second
+            loop {ActivePlayers::*}:
+                send actionbar "Il reste %{defense.duration} - loop-iteration-2% secondes" to loop-value-3
+        teleport loop-value to {_previous_loc}
+    startPhaseJudgement()
+
+function startPhaseJudgement():
+    set {non_nominnatted::*} to {ActivePlayers::*}
+    loop {NominatedPlayers::*}:
+        delete {non_nominnatted::%loop-value%}
+    loop {NominatedPlayers::*}:
+        set {vote_order::*} to shuffled {non_nominnatted::*}
+        loop {vote_order::*}:
+            send formatted "Voulez vous exclure ce joueur <command:/judge %loop-value-1% true>[OUI]<reset>/<command:/judge %loop-value-1% false>[NON]<reset>" to loop-value-2
+            loop {judgment.duration} time:
+                wait 1 second
+    closeJudgement()
+
+
+command /startPhase <text>:
+    permission: op
+    trigger:
+        if arg-1 is "Action":
+            startPhaseAction()
+        if arg-1 is "Discussion":
+            startPhaseDiscussion()
+        if arg-1 is "Defense":
+            startPhaseDefense()
+        if arg-1 is "Jugement":
+            startPhaseJudgement()
