@@ -19,39 +19,10 @@ command /testcircle <integer>:
         openCircleGui(sender, arg-1)
 
 function openCircleGui(p: player, amount: integer):
-    create a gui with virtual chest inventory with 6 rows named "&8Cercle pixel art":
-
-        # =========================
-        # CERCLE PIXEL ART
-        # Forme dans un coffre 9x6 :
-        #
-        # ...###...
-        # ..#...#..
-        # .#.....#.
-        # .#.....#.
-        # ..#...#..
-        # ...###...
-        #
-        # Slots du contour, dans l'ordre horaire
-        # =========================
-
+    create a gui with virtual chest inventory with 6 rows named "Membres du conseils":
         delete {_circle::*}
 
-        add 3 to {_circle::*}
-        add 4 to {_circle::*}
-        add 5 to {_circle::*}
-        add 15 to {_circle::*}
-        add 25 to {_circle::*}
-        add 34 to {_circle::*}
-        add 42 to {_circle::*}
-        add 50 to {_circle::*}
-        add 49 to {_circle::*}
-        add 48 to {_circle::*}
-        add 38 to {_circle::*}
-        add 28 to {_circle::*}
-        add 19 to {_circle::*}
-        add 11 to {_circle::*}
-
+        add 3,4,5,15,25,34,42,50,49,48,38,28,19 and 11 to {_circle::*}
         set {_circleSize} to size of {_circle::*}
 
         # Fond du GUI
@@ -79,6 +50,43 @@ function openCircleGui(p: player, amount: integer):
 
             set {_slot} to {_circle::%{_index}%}
 
-            make gui slot {_slot} with lime stained glass pane named "&aPoint %{_i} + 1%"
+            set {_player_head} to skull of {Players::%{%loop-number%}%}
+
+            make gui slot {_slot} with {_player_head} named "%{Players::%{%loop-number%}%}%"
 
     open last gui to {_p}
+
+command /setup:
+    permission: op
+    trigger:
+        create a gui with id "GameSetup" with virtual chest inventory with 1 rows named "Setup de la Game":
+            make gui slot 2 with Gray Wool named "Paramètre de la partie"
+            make gui slot 5 with Green Wool named "Paramètre des Roles":
+                roleSetup(player, "council")
+            make gui slot 8 with Red Wool named "Choix de l'extension (WIP)"
+
+create gui with id "GameSetup" with virtual chest inventory with 3 rows named "Paramètre de la partie":
+
+function roleSetup(p: player, role_type:string):
+    create gui with id "RoleSetup" with virtual chest inventory with 6 rows named "Choix des roles":
+        loop {%{_role_type}%.roles::*}:
+            if {%loop-value%.activated} is true:
+                set {_item} to green wool named "&b%loop-value%"
+            else:
+                set {_item} to red wool named "&c%loop-value%"
+            make gui slot loop-counter with {_item}:
+                if {%loop-value%.activated} is true:
+                    set {%loop-value%.activated} to false
+                else:
+                    set {%loop-value%.activated} to true
+                roleSetup({_p}, {_role_type})
+        make gui slot 3 with green wool named "Role du Conseil":
+            roleSetup({_p}, "council")
+        make gui slot 5 with gray wool named "Role Destructeur":
+            roleSetup({_p}, "destruct")
+        make gui slot 7 with red wool named "Role Infiltré":
+            roleSetup({_p}, "infiltrate")
+        make gui slot 9 with barrier block named "Retour":
+            open gui with id "GameSetup" to {_p}
+    open gui with id "RoleSetup" to {_p}
+

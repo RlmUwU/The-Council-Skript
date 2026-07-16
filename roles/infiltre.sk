@@ -3,5 +3,5 @@ on load:
     set {_role.displayname} to "infiltré"
     add {_role.name} to {roles::*}
     set {%{_role.name}%.camp} to "infiltre"
-    add {_role.name} to {infiltre.roles::*}
+    add {_role.name} to {infiltrate.roles::*}
     set {%{_role.name}%.order} to 0 
