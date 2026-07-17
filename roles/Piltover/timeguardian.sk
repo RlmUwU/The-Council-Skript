@@ -1,0 +1,16 @@
+on load:
+    set {_role.name} to "timeguardian"
+    set {_role.displayname} to "Gardien du Temps"
+    set {_role.camp} to "council"
+
+    add {_role.name} to {roles::*}
+    set {%{_role.name}%.camp} to {_role.camp}
+    add {_role.name} to {%{_role.camp}%.roles::*}
+    set {%{_role.name}%.order} to 15
+
+command /timebottle:
+    trigger:
+        if {%sender%.role} is {_role.name}:
+            set {_selected_player} to openCircleGui(sender, size of {Players::*})
+        else:
+            send "Tu n'est pas le guardien du temp" to sender

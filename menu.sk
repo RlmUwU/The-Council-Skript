@@ -1,24 +1,13 @@
-on load:
-    set {_shape::*} to (2, 0), (3, 0), (4, 0), (1, 1), (5, 1), (0, 2), (6, 2), (0, 3), (6, 3), (1, 4), (5, 4), (2, 5), (3, 5), (4, 5)
-
-command /testgui:
-    permission: op
-    trigger:
-        loop {ActivePlayers::*}:
-
-
-        create a gui with virtual chest inventory named "Conseil" with 6 rows
-        open the last gui for the sender 
-
-function calculatePlayersPostions():
-    
-
 command /testcircle <integer>:
     permission: op
     trigger:
         openCircleGui(sender, arg-1)
 
-function openCircleGui(p: player, amount: integer):
+command /council:
+    trigger:
+        openCircleGui(sender, size of {Players::*})
+
+function openCircleGui(p: player, amount: integer):: player:
     create a gui with virtual chest inventory with 6 rows named "Membres du conseils":
         delete {_circle::*}
 
@@ -52,7 +41,8 @@ function openCircleGui(p: player, amount: integer):
 
             set {_player_head} to skull of {Players::%{%loop-number%}%}
 
-            make gui slot {_slot} with {_player_head} named "%{Players::%{%loop-number%}%}%"
+            make gui slot {_slot} with {_player_head} named "%{Players::%{%loop-number%}%}%":
+                return {Players::%{%loop-number%}%}
 
     open last gui to {_p}
 
