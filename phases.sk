@@ -1,4 +1,5 @@
 on load:
+    set {phase} to "Pause"
     set {action.room.locations} to location(0, 150, 0)
     set {action.room.xdisplacement} to 50
     set {action.duration} to 30
@@ -11,6 +12,8 @@ on load:
     set {judgment.duration} to 15
 
 function startPhaseAction():
+    set {phase} to "Action"
+    resetPlayersActions()
     loop {ActivePlayers::*}:
         set {_p} to loop-value
         if {%{_p}%.camp} is not "infiltre":
@@ -26,6 +29,8 @@ function startPhaseAction():
 
 
 function startPhaseDiscussion():
+    set {phase} to "Discussion"
+
     loop {discussion.duration} time:
         wait 1 second
         loop {ActivePlayers::*}:
@@ -41,6 +46,7 @@ function startPhaseDiscussion():
     
 
 function startPhaseDefense():
+    set {phase} to "Defense"
     loop {NominatedPlayers::*}:
         set {_previous_loc} to loop-value's location
         teleport loop-value to {defense.center.location}
@@ -52,6 +58,7 @@ function startPhaseDefense():
     startPhaseJudgement()
 
 function startPhaseJudgement():
+    set {phase} to "Jugement"
     set {non_nominnatted::*} to {ActivePlayers::*}
     loop {NominatedPlayers::*}:
         delete {non_nominnatted::%loop-value%}

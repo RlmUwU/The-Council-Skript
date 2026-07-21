@@ -30,3 +30,19 @@ command /setRolePlayer <player> <role:text>:
             exit
         assigneRole(arg-1,arg-2)
         
+function resetPlayersActions():
+    resetTimeGuardian()
+
+function canPlayerAct(p: player, r:string, g:string, a:string):: boolean:
+    if {phase} is "Action":
+        return false
+    if {%{_p}%.role} is not {_r}:
+        return false
+    if {%{_p}%.%{_a}%} is false:
+        return false
+    if {%{_p}%.gemme} is not {_g}:
+        return false
+    return true
+
+function playRoleActions():
+    timeGuardianActions()

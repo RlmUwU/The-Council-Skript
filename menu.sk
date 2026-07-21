@@ -1,13 +1,13 @@
 command /testcircle <integer>:
     permission: op
     trigger:
-        openCircleGui(sender, arg-1)
+        openPlayerSelection(sender, arg-1)
 
-command /council:
-    trigger:
-        openCircleGui(sender, size of {Players::*})
+# command /council:
+#     trigger:
+#         openCircleGui(sender, size of {Players::*})
 
-function openCircleGui(p: player, amount: integer):: player:
+function openPlayerSelection(p: player, l: list):: player:
     create a gui with virtual chest inventory with 6 rows named "Membres du conseils":
         delete {_circle::*}
 
@@ -25,7 +25,7 @@ function openCircleGui(p: player, amount: integer):: player:
         # =========================
         # PLACEMENT DES POINTS
         # =========================
-
+        set {_amount} to size of {_l::*}
         set {_step} to {_circleSize} / {_amount}
 
         loop {_amount} times:
@@ -38,11 +38,12 @@ function openCircleGui(p: player, amount: integer):: player:
             set {_index} to {_rawIndex} + 1
 
             set {_slot} to {_circle::%{_index}%}
+            set {_player_name} to {_l::%{%loop-number%}%}
+            set {_player_head} to skull of {_player_name}
 
-            set {_player_head} to skull of {Players::%{%loop-number%}%}
-
-            make gui slot {_slot} with {_player_head} named "%{Players::%{%loop-number%}%}%":
-                return {Players::%{%loop-number%}%}
+            make gui slot {_slot} with {_player_head} named "%{_player_name}%":
+                add {_player_name} to {%sender%.selections.players::*}
+                return {_player_name}
 
     open last gui to {_p}
 

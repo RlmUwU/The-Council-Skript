@@ -1,35 +1,49 @@
 on load:
     set {_role.name} to "steelshadow"
     set {_role.displayname} to "Ombre d'acier"
+    set {_role.camp} to "council"
+
     add {_role.name} to {roles::*}
-    set {%{_role.name}%.camp} to "council"
-    add {_role.name} to {council.roles::*}
+    set {%{_role.name}%.camp} to {_role.camp}
+    add {_role.name} to {%{_role.camp}%.roles::*}
     set {%{_role.name}%.order} to 9
 
+
 function setupSteelShadow(p:player):
-    set {%{_role.name}%.protection} to true
-    set {%{_role.name}%.gemme} to "Fonctionnelle"
-    set {%{_role.name}%.player} to {_p}
+    set {%{_p}%.protection} to true
+    set {%{_p}%.gemme} to "Fonctionnelle"
+    add {_p} to {%{_role.name}%.players::*} 
     set {%{_p}%.role} to {_role.name}
 
 
 function steelShadowProtection(p:player):: boolean:
-    if {%{_p}%.role} is {_role.name}:
-        if {%{_role.name}%.protection} is true:
-            set {%{_role.name}%.protection} to false
-            set {%{_role.name}%.gemme} to "Défaillante"
-            return true
-    return false
+    if {%{_p}%.role} is not {_role.name}:
+        return false
+    if {%{_p}%.protection} is not true:
+        return false
+    set {%{_p}%.protection} to false
+    set {%{_p}%.gemme} to "Défaillante"
+    return true
+    
 
 command /precisionprotocol <player>:
     trigger:
         if {%sender%.role} is not {_role.name}:
             send "Tu n'a pas le role nécéssaire pour faire ceci" to sender
             exit
-        if {%{_role.name}%.gemme} is not "Fonctionnelle":
+        if {%sender%.gemme} is not "Fonctionnelle":
             send "Ta gemme n'est pas fonctionnelle" to sender
             exit
-        # Faire le menu de séléction du joueur
+        set {_selected_player} to openPlayerSelection()
+        set {%sender%.precisionprotocol} to {_selected_player}
+
+command /HextechUltimatum <player>:
+    trigger:
         
+
 function HextechUltimatum(t:player):
-    
+
+function steelShadowActions():
+    loop {%{_role.name}%.players::*}:
+        if {%loop-value%.precisionprotocol} is set:
+            

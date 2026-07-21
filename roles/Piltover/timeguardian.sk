@@ -8,9 +8,37 @@ on load:
     add {_role.name} to {%{_role.camp}%.roles::*}
     set {%{_role.name}%.order} to 15
 
+function setupTimeGuardian(p:player):
+    set {%{_p}%.timebottle} to false
+    set {%{_p}%.gemme} to "Fonctionnelle"
+    add {_p} to {%{_role.name}%.players::*}
+    set {%{_p}%.role} to {_role.name}
+
 command /timebottle:
     trigger:
-        if {%sender%.role} is {_role.name}:
-            set {_selected_player} to openCircleGui(sender, size of {Players::*})
-        else:
-            send "Tu n'est pas le guardien du temp" to sender
+        if canPlayerAct(sender, {_role.name}, "Fonctionnelle", "timebottle") is false:
+            exit
+        # if {%sender%.role} is {_role.name}:
+        #     send "Tu n'es pas le guardien du temps" to sender
+        #     exit
+        # if {phase} is "Action":
+        #     exit
+        # if {%sender%.timebottle} is false:
+        #     exit
+        # if {%sender%.gemme} is not "Fonctionnelle":
+        #     send "Ta gemme n'est pas fonctionnelle" to sender
+        #     exit
+        set {_selected_player} to openPlayerSelection(sender, size of {Players::*})
+        set {%sender%.timebottle} to {_selected_player}
+        
+
+function resetTimeGuardian():
+    loop {ActivePlayers::*}:
+        set {%loop-value%.timebottle} to false
+
+function timeGuardianActions():
+    loop {%{_role.name}%.players::*}:
+        if {%loop-value%.timebottle} is set:
+            send "%{%loop-value%.timebottle}% a agis sur les joueurs suivants:"
+            loop {%{%loop-value%.timebottle}%.selections.players::*}:
+                send "%loop-value-2%"
